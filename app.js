@@ -58,7 +58,7 @@ app.get('/:shorturl', (req, res) => {
     UrlShort.findOne({'ShortUrl': req.params.shorturl}, (err, doc) => {
         if(err) return res.send('Error Reading Database!');
         var re = new RegExp("^(http|https)://", "i");
-        if(!re.test(doc.OriginalUrl)){
+        if(!re.match(doc.OriginalUrl)){
             res.redirect(301, 'https://' + doc.OriginalUrl);
         } else {
             res.redirect(301, doc.OriginalUrl);
