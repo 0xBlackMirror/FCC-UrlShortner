@@ -9,7 +9,7 @@ const app = module.exports = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // Connection To The Database
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:/urlshort', { useMongoClient: true });
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://srt:adh19a@ds261755.mlab.com:61755/shorturl', { useMongoClient: true });
 // Setting db Variable For Database Use
 const db = mongoose.connection;
 // Setting Public Folder
