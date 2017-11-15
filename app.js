@@ -27,8 +27,8 @@ app.get('/', (req, res, next) => {
 // URL Show GET Request
 app.get('/new/:url(*)', (req, res) => {
     UrlShort.findOne({'OriginalUrl': req.params.url}, (err, doc) => {
-        //var dataQueries = Object.assign({OriginalUrl: doc.OriginalUrl, ShortUrl: doc.ShortUrl});
-        res.json(doc);
+        var dataQueries = Object.assign({OriginalUrl: doc.OriginalUrl, ShortUrl: doc.ShortUrl});
+        res.json(dataQueries);
     });
 });
 // URL Submit POST Request
