@@ -9,9 +9,10 @@ const app = module.exports = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // Connection To The Database
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://srt:adh19a@ds261755.mlab.com:61755/shorturl', { useMongoClient: true });
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/urlshort');
 // Setting db Variable For Database Use
-const db = mongoose.connection;
+const db = module.exports = mongoose.connection;
+mongoose.Promise = global.Promise;
 // Setting Public Folder
 app.use('/public', express.static(__dirname + 'public'));
 // Database Schema
@@ -23,13 +24,6 @@ var UrlShort = mongoose.model('UrlShort', UrlShortSchema);
 // HomePage GET Request
 app.get('/', (req, res, next) => {
     res.sendFile('./public/index.html', {root: __dirname});
-});
-// URL Show GET Request
-app.get('/new/:url(*)', (req, res) => {
-    UrlShort.findOne({'OriginalUrl': req.params.url}, (err, doc) => {
-        var dataQueries = Object.assign({OriginalUrl: doc.OriginalUrl, ShortUrl: doc.ShortUrl});
-        res.json(dataQueries);
-    });
 });
 // URL Submit POST Request
 app.post('/', (req, res) => {
@@ -46,7 +40,7 @@ app.post('/', (req, res) => {
             if (err) {
               console.log(err);
             } else {
-                db.collection('urlshort').insert(UrlShort);
+                db.collection('urlshorts').insert(UrlShort);
                 res.redirect('/new/' + url);
             }
           });
@@ -57,7 +51,7 @@ app.post('/', (req, res) => {
 app.get('/:shorturl', (req, res) => {
     UrlShort.findOne({'ShortUrl': req.params.shorturl}, (err, doc) => {
         if(err) return res.send('Error Reading Database!');
-        var re = new RegExp("/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/", "i");
+        var re = new RegExp("^(http|https)://", "i");
         if(!re.test(doc.OriginalUrl)){
             res.redirect(301, 'https://' + doc.OriginalUrl);
         } else {
@@ -65,11 +59,18 @@ app.get('/:shorturl', (req, res) => {
         }
     });
 });
+// URL Show GET Request
+app.get('/new/:url(*)', (req, res) => {
+    UrlShort.findOne({'OriginalUrl': req.params.url}, (err, doc) => {
+        //var dataQueries = Object.assign({OriginalUrl: doc.OriginalUrl, ShortUrl: doc.ShortUrl});
+        res.json(doc);
+    });
+});
 // Invalid Url Page GET Request
 app.get('/error', (req, res) => {
     res.send('URL is invalid. Please try another one.');
 });
 // Server Start
-app.listen(process.env.PORT || 80, () => {
+app.listen(process.env.PORT || 3000, () => {
     console.log('Server Is On.');
 });
